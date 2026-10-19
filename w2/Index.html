@@ -5,35 +5,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>今天吃什麼？</title>
 <style>
-    /* 活潑可愛的黃色/橘色系風格設計 */
-    body {
+    * {
+        box-sizing: border-box;
         margin: 0;
         padding: 0;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, '微軟正黑體';
-        background-color: #fff8e1; /* 溫暖的淺黃底色 */
+    }
+
+    body {
+        font-family: 'PingFang TC', 'Microsoft JhengHei', -apple-system, BlinkMacSystemFont, sans-serif;
+        /* 柔和粉橘漸層背景 */
+        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fef9d7 100%);
+        min-height: 100vh;
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
+        padding: 20px;
         text-align: center;
     }
     
+    /* 玻璃擬態主容器 */
     .container {
-        background-color: #ffffff;
-        border: 8px solid #ffcc80; /* 活潑的橘色邊框 */
-        border-radius: 30px;
-        padding: 40px;
-        box-shadow: 0 10px 25px rgba(255, 152, 0, 0.2);
-        max-width: 500px;
-        width: 90%;
+        background: rgba(255, 255, 255, 0.90);
+        backdrop-filter: blur(12px);
+        border-radius: 28px;
+        padding: 40px 30px;
+        box-shadow: 0 15px 35px rgba(235, 100, 120, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        max-width: 480px;
+        width: 100%;
+        transition: transform 0.3s ease;
     }
 
     /* 大標題樣式與彈跳動畫 */
     h1 {
-        color: #f57c00; 
-        font-size: 3.5em;
+        color: #ff6b81;
+        font-size: 2.3rem;
         margin-bottom: 20px;
-        text-shadow: 2px 2px 0px #ffe0b2;
+        font-weight: 700;
+        letter-spacing: 1px;
     }
 
     .bounce {
@@ -43,71 +52,76 @@
     @keyframes bounceAnim {
         0%   { transform: scale(1,1)    translateY(0); }
         10%  { transform: scale(1.1,.9) translateY(0); }
-        30%  { transform: scale(.9,1.1) translateY(-40px); }
+        30%  { transform: scale(.9,1.1) translateY(-30px); }
         50%  { transform: scale(1.05,.95) translateY(0); }
-        57%  { transform: scale(1,1)    translateY(-7px); }
+        57%  { transform: scale(1,1)    translateY(-6px); }
         64%  { transform: scale(1,1)    translateY(0); }
         100% { transform: scale(1,1)    translateY(0); }
     }
 
-    /* 照片區域樣式 */
+    /* 美食照片區域 */
     #foodImage {
         max-width: 100%;
-        height: 250px;
+        width: 100%;
+        height: 240px;
         object-fit: cover;
         border-radius: 20px;
-        margin-bottom: 15px;
+        margin-bottom: 18px;
         display: none;
-        border: 4px solid #ffe0b2;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        border: 4px solid #ffffff;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     }
 
-    /* Google Map 連結按鈕樣式 */
+    /* Google Map 藍色漸層按鈕 */
     #mapsLink {
-        background-color: #e0f7fa;
-        color: #00838f;
+        background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+        color: #ffffff;
         text-decoration: none;
-        padding: 12px 25px;
+        padding: 12px 24px;
         border-radius: 30px;
-        font-weight: bold;
-        font-size: 1.1em;
-        margin-bottom: 25px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 22px;
         align-items: center;
-        gap: 10px;
-        border: 2px solid #b2ebf2;
-        transition: all 0.2s;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 4px 15px rgba(0, 114, 255, 0.25);
+        transition: all 0.25s ease;
         display: none; /* 預設隱藏 */
     }
 
     #mapsLink:hover {
-        background-color: #b2ebf2;
         transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 114, 255, 0.35);
+        filter: brightness(1.05);
     }
 
-    /* 抽籤大按鈕樣式 */
+    /* 抽籤主要按鈕 */
     #drawButton {
-        background-color: #ff9800;
+        background: linear-gradient(135deg, #ff6b81 0%, #ff8e53 100%);
         color: white;
         border: none;
-        padding: 18px 50px;
-        font-size: 1.8em;
-        font-weight: bold;
+        padding: 16px 42px;
+        font-size: 1.35rem;
+        font-weight: 700;
         border-radius: 50px;
         cursor: pointer;
-        box-shadow: 0 6px 0px #e65100, 0 10px 15px rgba(255, 152, 0, 0.4);
-        transition: all 0.1s;
+        box-shadow: 0 8px 20px rgba(255, 107, 129, 0.35);
+        transition: all 0.25s ease;
         display: block;
-        margin: 0 auto;
-        margin-top: 10px;
+        margin: 10px auto 0;
+        letter-spacing: 1px;
     }
 
     #drawButton:hover {
-        background-color: #ffa726;
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(255, 107, 129, 0.45);
+        filter: brightness(1.03);
     }
-    
+
     #drawButton:active {
-        box-shadow: 0 2px 0px #e65100, 0 4px 6px rgba(255, 152, 0, 0.4);
-        transform: translateY(4px);
+        transform: translateY(1px);
+        box-shadow: 0 4px 10px rgba(255, 107, 129, 0.3);
     }
 </style>
 </head>
@@ -170,7 +184,7 @@
         const randomIndex = Math.floor(Math.random() * foods.length);
         const selectedFood = foods[randomIndex];
 
-        // 延遲一下讓動畫飛到最高點時替換文字，視覺效果更好
+        // 延遲一下讓動畫飛到最高點時替換文字
         setTimeout(() => {
             // 替換大標題
             titleElement.textContent = selectedFood.name;
@@ -189,3 +203,4 @@
 
 </body>
 </html>
+
