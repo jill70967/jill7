@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>今天吃什麼？</title>
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: 'PingFang TC', 'Microsoft JhengHei', -apple-system, BlinkMacSystemFont, sans-serif;
+        /* 柔和粉橘漸層背景 */
+        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fef9d7 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        text-align: center;
+    }
+    
+    /* 玻璃擬態主容器 */
+    .container {
+        background: rgba(255, 255, 255, 0.90);
+        backdrop-filter: blur(12px);
+        border-radius: 28px;
+        padding: 40px 30px;
+        box-shadow: 0 15px 35px rgba(235, 100, 120, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        max-width: 480px;
+        width: 100%;
+        transition: transform 0.3s ease;
+    }
+
+    /* 大標題樣式與彈跳動畫 */
+    h1 {
+        color: #ff6b81;
+        font-size: 2.3rem;
+        margin-bottom: 20px;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+    .bounce {
+        animation: bounceAnim 0.6s cubic-bezier(0.28, 0.84, 0.42, 1);
+    }
+
+    @keyframes bounceAnim {
+        0%   { transform: scale(1,1)    translateY(0); }
+        10%  { transform: scale(1.1,.9) translateY(0); }
+        30%  { transform: scale(.9,1.1) translateY(-30px); }
+        50%  { transform: scale(1.05,.95) translateY(0); }
+        57%  { transform: scale(1,1)    translateY(-6px); }
+        64%  { transform: scale(1,1)    translateY(0); }
+        100% { transform: scale(1,1)    translateY(0); }
+    }
+
+    /* 美食照片區域 */
+    #foodImage {
+        max-width: 100%;
+        width: 100%;
+        height: 240px;
+        object-fit: cover;
+        border-radius: 20px;
+        margin-bottom: 18px;
+        display: none;
+        border: 4px solid #ffffff;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Google Map 藍色漸層按鈕 */
+    #mapsLink {
+        background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+        color: #ffffff;
+        text-decoration: none;
+        padding: 12px 24px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 22px;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 4px 15px rgba(0, 114, 255, 0.25);
+        transition: all 0.25s ease;
+        display: none; /* 預設隱藏 */
+    }
+
+    #mapsLink:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 114, 255, 0.35);
+        filter: brightness(1.05);
+    }
+
+    /* 抽籤主要按鈕 */
+    #drawButton {
+        background: linear-gradient(135deg, #ff6b81 0%, #ff8e53 100%);
+        color: white;
+        border: none;
+        padding: 16px 42px;
+        font-size: 1.35rem;
+        font-weight: 700;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 8px 20px rgba(255, 107, 129, 0.35);
+        transition: all 0.25s ease;
+        display: block;
+        margin: 10px auto 0;
+        letter-spacing: 1px;
+    }
+
+    #drawButton:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(255, 107, 129, 0.45);
+        filter: brightness(1.03);
+    }
+
+    #drawButton:active {
+        transform: translateY(1px);
+        box-shadow: 0 4px 10px rgba(255, 107, 129, 0.3);
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1 id="resultTitle">今天吃什麼？</h1>
+    
+    <img id="foodImage" src="" alt="美食照片">
+    <br>
+    <a id="mapsLink" href="#" target="_blank">
+        📍 馬上出發幫我連結去 google map
+    </a>
+    
+    <button id="drawButton">點我抽籤</button>
+</div>
+
+<script>
+    // 建立食物資料庫，包含名稱、圖片連結與 Google Map 搜尋關鍵字
+    const foods = [
+        { 
+            name: 'SAY CHEESE培根筆管麵', 
+            image: 'https://i.postimg.cc/Dy69r8Sh/ohlala-140.png', 
+            query: '7-ELEVEN 華輝門市' 
+        },
+        { 
+            name: 'pork sisig sizzling ', 
+            image: 'https://i.postimg.cc/FKkHR2hP/Screenshot-20261019-180412.png',
+            query: 'Chi-Cha Filipino Cuisine' 
+        },
+        { 
+            name: 'Pasta', 
+            image: 'https://i.postimg.cc/6q2016Kz/Screenshot-20261019-181100.png', 
+            query: 'Uncle Mori Pasta 默里叔叔義大利麵' 
+        },
+        { 
+            name: '小籠包', 
+            image: 'https://i.postimg.cc/bYgDKfrL/Screenshot-20261019-181843.png', 
+            query: '港記港式點心專賣店' 
+        },
+        { 
+            name: 'Pizza', 
+            image: 'https://i.postimg.cc/ZqJ0ffmg/Screenshot-20261019-183044.png', 
+            query: "Domino's 達美樂披薩 楠梓建楠店" 
+        }
+    ];
+
+    const titleElement = document.getElementById('resultTitle');
+    const imageElement = document.getElementById('foodImage');
+    const mapsLinkElement = document.getElementById('mapsLink');
+    const drawButton = document.getElementById('drawButton');
+
+    drawButton.addEventListener('click', () => {
+        // 重置並觸發彈跳動畫
+        titleElement.classList.remove('bounce');
+        void titleElement.offsetWidth; // 強制重繪以重啟動畫
+        titleElement.classList.add('bounce');
+
+        // 隨機挑選食物
+        const randomIndex = Math.floor(Math.random() * foods.length);
+        const selectedFood = foods[randomIndex];
+
+        // 延遲一下讓動畫飛到最高點時替換文字
+        setTimeout(() => {
+            // 替換大標題
+            titleElement.textContent = selectedFood.name;
+
+            // 顯示指定照片
+            imageElement.src = selectedFood.image;
+            imageElement.style.display = 'inline-block';
+
+            // 設定 Google Map 連結並顯示按鈕
+            const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedFood.query)}`;
+            mapsLinkElement.href = mapsUrl;
+            mapsLinkElement.style.display = 'inline-flex';
+        }, 150); 
+    });
+</script>
+
+</body>
+</html>
+
