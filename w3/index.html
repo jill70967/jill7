@@ -5,24 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>作業三：迷因產生器</title>
 
-  <!-- 1. 引入 Google Fonts (Anton 與 Noto Sans TC) -->
+  <!-- 1. Google Fonts & Font Awesome 圖標庫 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- 2. 引入 html2canvas 截圖下載函式庫 -->
+  <!-- 2. html2canvas 截圖下載函式庫 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <style>
-    /* CSS 樣式與整體風格設定 */
-    :root {
-      --bg-color: #0f172a;
-      --card-bg: #1e293b;
-      --accent-color: #6366f1;
-      --accent-hover: #4f46e5;
-      --text-color: #f8fafc;
-    }
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -30,14 +22,15 @@
     }
 
     body {
-      font-family: 'Noto Sans TC', sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
+      font-family: 'PingFang TC', 'Noto Sans TC', -apple-system, sans-serif;
+      /* 柔和粉橘漸層背景 */
+      background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fef9d7 100%);
+      color: #2c3e50;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px;
+      padding: 24px 16px;
     }
 
     header {
@@ -47,13 +40,13 @@
 
     header h1 {
       font-size: 2.2rem;
-      background: linear-gradient(135deg, #a855f7, #6366f1);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
+      color: #ff6b81;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 10px rgba(255, 107, 129, 0.2);
     }
 
-    /* RWD 響應式網格佈局：手機預設單欄，桌機顯示兩欄 */
+    /* 網格佈局 */
     .container {
       display: grid;
       grid-template-columns: 1fr;
@@ -64,16 +57,18 @@
 
     @media (min-width: 768px) {
       .container {
-        grid-template-columns: 350px 1fr;
+        grid-template-columns: 360px 1fr;
       }
     }
 
-    /* 控制面板與預覽卡片外觀 */
+    /* 控制面板與預覽卡片 (玻璃擬態效果) */
     .panel, .preview-area {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      background: rgba(255, 255, 255, 0.90);
+      backdrop-filter: blur(12px);
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: 0 15px 35px rgba(235, 100, 120, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.8);
     }
 
     .panel {
@@ -89,73 +84,90 @@
     }
 
     .form-group label {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: #cbd5e1;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #4a5568;
     }
 
-    /* 隱藏原生檔案選擇器，改用自訂按鈕 */
+    /* 自訂檔案上傳按鈕 */
     input[type="file"] {
       display: none;
     }
 
     .file-upload-btn {
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       text-align: center;
       padding: 12px;
-      background: #334155;
-      color: #fff;
-      border-radius: 8px;
+      background: #ffffff;
+      color: #ff6b81;
+      border-radius: 14px;
       cursor: pointer;
-      border: 2px dashed #475569;
-      transition: all 0.2s ease;
+      border: 2px dashed #ffb6c1;
+      font-weight: 700;
+      font-size: 0.92rem;
+      transition: all 0.25s ease;
     }
 
     .file-upload-btn:hover {
-      background: #475569;
-      border-color: var(--accent-color);
+      background: #ffe4e8;
+      border-color: #ff6b81;
+      transform: translateY(-2px);
     }
 
-    /* 文字輸入框樣式 */
+    /* 文字輸入框 */
     input[type="text"] {
-      padding: 10px 14px;
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      color: #fff;
-      font-size: 1rem;
+      padding: 12px 16px;
+      background: #ffffff;
+      border: 1px solid #ffe0e6;
+      border-radius: 14px;
+      color: #2c3e50;
+      font-size: 0.95rem;
       outline: none;
+      transition: all 0.25s ease;
     }
 
     input[type="text"]:focus {
-      border-color: var(--accent-color);
+      border-color: #ff6b81;
+      box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.15);
     }
 
-    /* 滑桿樣式 */
+    /* 滑桿 */
     input[type="range"] {
       width: 100%;
-      accent-color: var(--accent-color);
+      accent-color: #ff6b81;
       cursor: pointer;
     }
 
     /* 下載按鈕 */
     .download-btn {
       margin-top: 10px;
-      padding: 14px;
-      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      padding: 15px;
+      background: linear-gradient(135deg, #ff6b81 0%, #ff8e53 100%);
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 16px;
       font-size: 1.05rem;
-      font-weight: bold;
+      font-weight: 700;
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+      transition: all 0.25s ease;
+      box-shadow: 0 8px 20px rgba(255, 107, 129, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     .download-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 25px rgba(255, 107, 129, 0.45);
+      filter: brightness(1.03);
+    }
+
+    .download-btn:active {
+      transform: translateY(1px);
     }
 
     /* 即時預覽區域 */
@@ -164,28 +176,70 @@
       justify-content: center;
       align-items: center;
       overflow: hidden;
-      min-height: 320px;
+      min-height: 380px;
+      position: relative;
     }
 
-    /* 迷因圖片與文字容器 (截圖目標) */
     #meme-container {
       position: relative;
       max-width: 100%;
       display: inline-block;
-      border-radius: 8px;
+      border-radius: 18px;
       overflow: hidden;
-      background-color: #000;
+      background-color: transparent;
+      min-width: 280px;
+      min-height: 280px;
     }
 
-    /* 底圖 */
     #meme-image {
-      display: block;
+      display: none;
       max-width: 100%;
       max-height: 500px;
       object-fit: contain;
+      border-radius: 12px;
     }
 
-    /* 迷因文字樣式：加上黑色粗邊框 (text-shadow) */
+    /* 未上傳圖片時顯示的占位圖示區塊 */
+    .upload-placeholder {
+      width: 320px;
+      height: 320px;
+      max-width: 100%;
+      border: 3px dashed #ffb6c1;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.6);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      color: #ff6b81;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .upload-placeholder:hover {
+      background: rgba(255, 228, 232, 0.8);
+      border-color: #ff6b81;
+      transform: scale(1.02);
+    }
+
+    .upload-placeholder i {
+      font-size: 3.5rem;
+    }
+
+    .upload-placeholder p {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .upload-placeholder span {
+      font-size: 0.82rem;
+      color: #888;
+    }
+
+    /* 迷因文字樣式 */
     .meme-text {
       position: absolute;
       left: 50%;
@@ -198,7 +252,6 @@
       word-wrap: break-word;
       line-height: 1.2;
       user-select: none;
-      /* 8 方向黑色粗陰影 */
       text-shadow: 
         3px 3px 0 #000, -3px -3px 0 #000, 
         3px -3px 0 #000, -3px 3px 0 #000,
@@ -222,16 +275,18 @@
   </header>
 
   <main class="container">
-    <!-- 左側/上方：控制面板 -->
+    <!-- 左側：控制面板 -->
     <section class="panel">
-      <!-- 1. 本地圖片上傳 (避免 CORS 錯誤) -->
+      <!-- 1. 圖片上傳 -->
       <div class="form-group">
         <label>1. 上傳圖片底圖</label>
-        <label for="image-input" class="file-upload-btn">📁 選擇電腦中的圖片</label>
+        <label for="image-input" class="file-upload-btn">
+          <i class="fa-solid fa-cloud-arrow-up"></i> 選擇電腦中的圖片
+        </label>
         <input type="file" id="image-input" accept="image/*">
       </div>
 
-      <!-- 2. 雙層文字輸入 -->
+      <!-- 2. 文字輸入 -->
       <div class="form-group">
         <label for="text-top-input">2. 上方文字</label>
         <input type="text" id="text-top-input" placeholder="請輸入上方文字...">
@@ -258,16 +313,23 @@
         <input type="range" id="bottom-pos-slider" min="0" max="40" value="10">
       </div>
 
-      <!-- 4. 一鍵下載按鈕 -->
-      <button class="download-btn" id="download-btn">🚀 一鍵下載迷因</button>
+      <!-- 4. 下載按鈕 -->
+      <button class="download-btn" id="download-btn">
+        <i class="fa-solid fa-download"></i> 一鍵下載迷因
+      </button>
     </section>
 
-    <!-- 右側/下方：即時預覽區 -->
+    <!-- 右側：即時預覽區 -->
     <section class="preview-area">
       <div id="meme-container">
-        <!-- 已替換為你的圖片網址 -->
-        <img id="meme-image" src="generate a meme" alt="Meme Preview">
-        <!-- 圖層文字 -->
+        <!-- 上傳提示 Placeholder -->
+        <div id="placeholder-box" class="upload-placeholder">
+          <i class="fa-solid fa-image"></i>
+          <p>請上傳您的圖片</p>
+          <span>點擊此處或使用左側按鈕選擇照片</span>
+        </div>
+
+        <img id="meme-image" src="" alt="Meme Preview">
         <div id="text-top-display" class="meme-text"></div>
         <div id="text-bottom-display" class="meme-text"></div>
       </div>
@@ -275,9 +337,9 @@
   </main>
 
   <script>
-    // 獲取所有 DOM 元素
     const imageInput = document.getElementById('image-input');
     const memeImage = document.getElementById('meme-image');
+    const placeholderBox = document.getElementById('placeholder-box');
 
     const textTopInput = document.getElementById('text-top-input');
     const textBottomInput = document.getElementById('text-bottom-input');
@@ -292,19 +354,26 @@
     const downloadBtn = document.getElementById('download-btn');
     const memeContainer = document.getElementById('meme-container');
 
-    // 1. 本地圖片上傳：使用 FileReader 讀取圖片，防止跨域 (CORS) 錯誤
+    // 點擊預覽區 Placeholder 亦可開啟檔案選擇器
+    placeholderBox.addEventListener('click', () => {
+      imageInput.click();
+    });
+
+    // 讀取上傳的本地圖片
     imageInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = function(event) {
-          memeImage.src = event.target.result; // 將圖片轉成 Base64 並載入
+          memeImage.src = event.target.result;
+          memeImage.style.display = 'block';
+          placeholderBox.style.display = 'none'; // 隱藏占位區塊
         };
         reader.readAsDataURL(file);
       }
     });
 
-    // 2. 文字即時同步顯示
+    // 文字即時同步
     textTopInput.addEventListener('input', () => {
       textTopDisplay.textContent = textTopInput.value;
     });
@@ -313,7 +382,7 @@
       textBottomDisplay.textContent = textBottomInput.value;
     });
 
-    // 3. 滑桿控制字體大小與垂直位置
+    // 滑桿控制字體大小與位置
     fontSizeSlider.addEventListener('input', () => {
       const size = fontSizeSlider.value + 'px';
       textTopDisplay.style.fontSize = size;
@@ -329,15 +398,18 @@
       textBottomDisplay.style.bottom = bottomPosSlider.value + 'px';
     });
 
-    // 初始化預設字體大小
     textTopDisplay.style.fontSize = fontSizeSlider.value + 'px';
     textBottomDisplay.style.fontSize = fontSizeSlider.value + 'px';
 
-    // 4. 一鍵下載：使用 html2canvas 將 DOM 轉為 PNG 檔案並自動觸發下載
+    // 一鍵下載迷因
     downloadBtn.addEventListener('click', () => {
+      if (!memeImage.src || memeImage.style.display === 'none') {
+        alert('請先上傳圖片再進行下載！');
+        return;
+      }
       html2canvas(memeContainer, {
         useCORS: true,
-        scale: 2 // 提高輸出解析度
+        scale: 2
       }).then(canvas => {
         const link = document.createElement('a');
         link.download = 'my-meme.png';
@@ -348,3 +420,4 @@
   </script>
 </body>
 </html>
+
